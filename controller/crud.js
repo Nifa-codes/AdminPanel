@@ -17,6 +17,7 @@ const addUser = function (req, res) {
         try {
             users = JSON.parse(user);
           } catch (parseErr) {
+            console.error('Error parsing users data:', parseErr); 
             return res.status(500).send('Error parsing users data');
           }
           const duplicateUser = users.some(u => 
@@ -108,8 +109,46 @@ const deleteUser = function (req, res) {
         });
     });
 }
+//list users
+const getUsers = function(req,res){
+  fs.readFile(usersPath,'utf-8',(err,data)=>{
+    if(err)
+    {
+      res.status(500).send('Error reading users list');
+    }
+    let users=[];
+    users=JSON.parse(data);
+    res.send(users);
+
+  });
+}
+//search user
+const getUser =function(req,res){
+  fs.readFile(usersPath,'utf-8',(err,data)=>{
+   if (err)
+   {
+    return res.status(500).send('error reading users');
+   }
+   let users=[];
+   users=JSON.parse(data);
+   let query= req.query.q;
+   if (!query) {
+    return res.status(400).send('Query is null');
+  }
+   let user= users.filter(u=>(u.name.toLowerCase().includes(query.toLowerCase()))||
+   (u.email.toLowerCase().includes(query.toLowerCase())));
+   if(user.length==0){
+    return res.status(404).send('no users found');
+   }
+   else{
+    res.status(200).json(user);
+   }
+  });
+}
 module.exports = {
     addUser,
     editUser,
-    deleteUser
+    deleteUser,
+    getUsers,
+    getUser
   };
