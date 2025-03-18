@@ -7,6 +7,10 @@ const addUser = function (req, res) {
     console.log("add user called");
     //input data
     const { name, email, password } = req.body;
+    console.log(name);
+    console.log(email);
+    console.log(password);
+    
     //read data from Users.js
     fs.readFile(usersPath, 'utf-8', (err, user) => {
         if (err) {
@@ -21,7 +25,7 @@ const addUser = function (req, res) {
             return res.status(500).send('Error parsing users data');
           }
           const duplicateUser = users.some(u => 
-            u.email.toLowerCase() === email.toLowerCase()
+            u.email.toLowerCase() == email.toLowerCase()
           );
         if (duplicateUser) {
             res.status(409).send('user already exist');
@@ -98,6 +102,10 @@ const deleteUser = function (req, res) {
         let users = [];
         users=JSON.parse(user);
         let deletedUser = users.findIndex(c => c.id == id);
+        if(deletedUser==-1)
+        {
+         return res.status(404).send('user not found');
+        }
         users.splice(deletedUser, 1);
 
         fs.writeFile(usersPath, JSON.stringify(users), err => {
