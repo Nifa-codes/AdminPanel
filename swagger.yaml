@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: ADMINPANEL
+  description: Performs CRUD on a json file using async functions
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /api/users:
+    get:
+      summary: Retrieve all users
+      tags:
+        - Users
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Error reading Users.json
+    post:
+      summary: Add User
+      tags:
+        - Users
+      requestBody:
+        description: info of the user object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInfo'
+      responses:
+        '200':
+          description: User added successfully
+        '409':
+          description: User already exists
+        '500':
+          description: Error reading Users.json or saving user
+
+  /api/users/{id}:
+    put:
+      summary: Edit an existing user
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: Id of user which is gonna be edited
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User object with updated fields
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User updated successfully
+        '404':
+          description: User not found
+        '500':
+          description: Error updating user
+    delete:
+        summary: Delete a user
+        tags:
+          - Users
+        parameters:
+          - name: id
+            in: path
+            description: Id of user which is gonna be deleted
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: User deleted successfully
+          '404':
+            description: User not found
+          '500':
+            description: Error deleting user
+  /api/users/search:
+    get:
+      summary: Search for users by name or email
+      tags:
+        - Users
+      parameters:
+        - name: q
+          in: query
+          description: Query string to search for in users name or email
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of matching users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Query is null
+        '404':
+          description: No users found
+        '500':
+          description: Error reading users
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the user.
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - id
+        - name
+        - email
+        - password
+    UserInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - name
+        - email
+        - password
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    

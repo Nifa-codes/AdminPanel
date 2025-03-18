@@ -98,6 +98,10 @@ const deleteUser = function (req, res) {
         let users = [];
         users=JSON.parse(user);
         let deletedUser = users.findIndex(c => c.id == id);
+        if(deletedUser==-1)
+        {
+          return res.status(404).send('user not found');
+        }
         users.splice(deletedUser, 1);
 
         fs.writeFile(usersPath, JSON.stringify(users), err => {
